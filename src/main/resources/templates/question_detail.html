@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>커뮤니티</title>
-    <link rel="stylesheet" href="/community-form.css">
+    <link rel="stylesheet" href="/community-detail.css">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" th:href="@{/bootstrap.min.css}">
 </head>
@@ -20,26 +20,43 @@
                     <img src="/images/backhome-icon2.png" alt="홈" class="backhome-icon">
                 </a>
             </div>
-            <h1>글쓰기</h1>
+            <h1>커뮤니티</h1>
             <div class="right-space"></div>
         </div>
         <div class="content">
-            <div class="mobile-container">
-                <h5 class="title-text">커뮤니티 글 등록</h5>
-                <h5 class="title-text2">투석에 대한 모든 것을 질문해보세요. 경험을 공유하세요!</h5>
-                <form th:action="@{/question/create}" th:object="${questionForm}" method="post">
-                    <div th:replace="~{form_errors :: formErrorsFragment}"></div>
-                    <div class="m-3">
-                        <input type="text" th:field="*{subject}" class="form-control" placeholder="  제목">
+            <!--질문 card 시작-->
+            <div class="question-box">
+                <h2 class="title-text" th:text="${question.subject}"></h2>
+                <div class="q-card">
+                    <div class="q-card-body">
+                        <div class="date" th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+                        <div class="card-text" style="white-space: pre-line;" th:text="${question.content}"></div>
                     </div>
-                    <div class="m-3">
-                        <textarea th:field="*{content}" class="form-control" placeholder="  내용을 입력하세요."rows="10"></textarea>
+                </div>
+            </div>
+            <div class="answer-box">
+                <!--답변의 갯수를 의미-->
+                <h5 class="title-text2" th:text="|${#lists.size(question.answerList)}개의 답변|"></h5>
+                <!-- 답변 반복 시작 -->
+                <div class="a-card" th:each="answer : ${question.answerList}">
+                    <div class="a-card-body">
+                        <div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
+                        <div class="d-flex justify-content-start">
+                            <div class="date">
+                                <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+                            </div>
+                        </div>
                     </div>
-                    <!--                    my-2 -> m-3으로? -->
-                    <input type="submit" value="글쓰기" class="btn btn-primary my-2 answer-button">
-                </form>
+                </div>
+                <!-- 답변 반복 끝  -->
             </div>
         </div>
+        <!-- 답변 작성 -->
+        <form th:action="@{|/answer/create/${question.id}|}" th:object="${answerForm}" method="post" class="my-3 answer-form">
+            <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+            <textarea th:field="*{content}" rows="5" class="form-control" placeholder="  답변을 남겨보세요."></textarea>
+            <input type="submit" value="답변등록" class="btn btn-primary my-2 answer-button">
+        </form>
     </div>
 </div>
 <script th:src="@{/bootstrap.min.js}"></script>
